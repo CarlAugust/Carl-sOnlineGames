@@ -18,12 +18,8 @@ CREATE TABLE IF NOT EXISTS gameResult (
     score INTEGER NOT NULL,
     nameId INTEGER,
     userId INTEGER,
-    FOREIGN_KEYS (
-        nameId
-    ) REFERENCES user (id),
-    FOREIGN_KEYS (
-        userId
-    ) REFERENCES user (id)
+    FOREIGN KEY (nameId) REFERENCES game (id),
+    FOREIGN KEY (userId) REFERENCES user (id) 
 );
 
 COMMIT TRANSACTION;
