@@ -7,13 +7,12 @@
 </head>
 <body>
     <h1>Users List</h1>
-    <ul>
-        <% users.forEach(function(user) { %>
-            <li><%= user.name %></li>
-        <% }); %>
-    </ul>
 
-    <form method="POST" action="/login">
+    <% if (error != "") { %>
+        <p><%= error %></p>
+    <% } %>
+
+    <form method="POST" action="/login/attempt">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
         <label for="password">Password:</label>
