@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users List</title>
+</head>
+<body>
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="usernameLgn" name="username" required>
+        <label for="password">Password:</label>
+        <input type="password" id="passwordLgn" name="password" required>
+        <button id="loginBtn" onclick="login()">Login</button>
+        <p id="errorLgn"></p>
+    </div>
+
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="usernameSgn" name="username" required>
+        <label for="password">Password:</label>
+        <input type="password" id="passwordSgn1" name="password" required>
+        <label for="password">Type password again:</label>
+        <input type="password" id="passwordSgn2" name="password" required>
+        <button id="loginBtn" onclick="signin()">Login</button>
+        <p id="errorSgn"></p>
+    </div>
+</body> 
+<script src="index.js"></script>
+</html>

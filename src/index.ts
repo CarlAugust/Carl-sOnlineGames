@@ -14,6 +14,9 @@ declare module 'express-session' {
 import * as sql from "../database/sql";
 import * as mw from "./middleware";
 import { SessionUser } from "../types/express-types";
+import { User } from "../types/sql-types";
+
+const ppath = "../public";
 
 dotenv.config();
 
@@ -32,11 +35,11 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
 app.get('/', mw.checkLoggedIn, (req: Request, res: Response) => {
-  res.render("main");
+  res.sendFile(path.join(__dirname, `${ppath}/main`));
 });
 
 app.get('/login', (req: Request, res: Response) => {
-  res.render("login", {error: ""});
+  res.sendFile(path.join(__dirname, `${ppath}/login`));
 });
 
 app.post('/login/attempt', (req: Request, res: Response) => {
@@ -44,7 +47,7 @@ app.post('/login/attempt', (req: Request, res: Response) => {
 
   if (user == undefined)
   {
-    res.render("login", {error: "User does not exist"});
+    res.status(400).json({error: "User does not exist"});
     return;
   }
 
@@ -55,13 +58,13 @@ app.post('/login/attempt', (req: Request, res: Response) => {
 
   if (!correctPassword)
   {
-    res.render("login", {error: "Wrong password"});
+    res.status(400).json({error: "Wrong password"});
     return;
   }
 
   if (req.session.user) {
     req.session.user.id = user.id;
-    req.session.user.name = user.name;
+    req.session.user.name = user.username;
   }
 
   res.redirect("/"); 
@@ -70,4 +73,34 @@ app.post('/login/attempt', (req: Request, res: Response) => {
 app.use(express.static(path.join(__dirname, '../public')));
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
+});
+
+app.post('signin/attempt', (req: Request, res: Response) => {
+  let user: User = req.body as User;
+
+  if (!sql.checkUser(user.username))
+  { 
+    res.status(400).json({error: "User already exists"});
+    return; 
+  }
+
+  const saltRounds = 10;
+  bcrypt.hash(user.password, saltRounds, function(err, hash) {
+    if (err)
+    {
+      res.status(500).json({error: ""});
+      console.log(err);
+      return;
+    }
+    user.password = hash;
+  });
+
+  const id = sql.insertUser(user);
+
+  if (req.session.user) {
+    req.session.user.id = id;
+    req.session.user.name = user.username;
+  }
+
+  res.redirect('/');
 });

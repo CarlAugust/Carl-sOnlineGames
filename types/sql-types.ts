@@ -1,5 +1,9 @@
 export interface User {
-    id: number;
-    name: string;
+    id: Number | BigInt;
+    username: string;
     password: string;
+}
+
+export interface Count {
+    count: Number;
 }

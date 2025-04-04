@@ -1,5 +1,5 @@
 export interface SessionUser
 {
-    id: number;
+    id: Number | BigInt;
     name: string;
 }
