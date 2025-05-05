@@ -1,3 +1,17 @@
+const checkResponse = async (response) => {
+    if (response.ok) {
+        const data = await response.json();
+        if (data.redirect) {
+            window.location.href = data.redirect;
+        } else {
+            console.log("Signed in:", data);
+        }
+    } else {
+        const errorText = await response.text();
+        console.error("Error:", errorText);
+    }
+}
+
 const login = async () => {
     console.log("Sent form");
     const username = document.getElementById("usernameLgn").value;
@@ -9,31 +23,33 @@ const login = async () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
         });
-        console.log(await response.json());
+        checkResponse(response);
     } catch (e) {
         console.error(e);
     }
 };
 
 const signin = async () => {
-    console.log("Sent form");
+
     const username = document.getElementById("usernameSgn").value;
     const password1 = document.getElementById("passwordSgn1").value;
-    const password2 = document.getElementById("passowrdSgn2").value;
+    const password2 = document.getElementById("passwordSgn2").value;
 
     if (password1 != password2)
     {
         const errorField = document.getElementById("errorSgn");
         errorField.innerHTML = "Password is not the same";
+        return;
     }
 
     try {
         const response = await fetch("/signin/attempt", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password1 }),
+            body: JSON.stringify({ username, password: password1 }),
         });
-        console.log(await response.json());
+        checkResponse(response);
+        
     } catch (e) {
         console.error(e);
     }

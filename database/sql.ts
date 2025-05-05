@@ -39,7 +39,7 @@ export function insertUser(user: User): Number | BigInt
 
 export function getUserPassword(name: String): User
 {
-    const query = db.prepare("SELECT password FROM user");
-    const user = query.get() as User;
+    const query = db.prepare("SELECT password, id FROM user WHERE name = ?");
+    const user = query.get(name) as User;
     return user;
 }

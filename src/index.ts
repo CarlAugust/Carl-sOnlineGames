@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import bcrypt from "bcrypt";
+import bcrypt, { genSaltSync } from "bcrypt";
 import session from 'express-session';
 import { fileURLToPath } from 'url';
 import path from "path";
@@ -42,65 +42,50 @@ app.get('/login', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, `${ppath}/login`));
 });
 
-app.post('/login/attempt', (req: Request, res: Response) => {
-  const user = sql.getUserPassword(req.body.name);
-
-  if (user == undefined)
+app.post('/login/attempt', async (req: Request, res: Response) => {
+  let user: User = req.body as User;
+  const dbUser = sql.getUserPassword(user.username);
+  if (!dbUser)
   {
-    res.status(400).json({error: "User does not exist"});
+    res.status(400).json({ error: 'Invalid credentials'});
     return;
   }
 
-  let correctPassword; 
-  bcrypt.compare(user.password, req.body.password, function(err, result){
-    correctPassword = result;
-  });
-
-  if (!correctPassword)
+  const valid = await bcrypt.compare(user.password, dbUser.password);
+  if (!valid)
   {
-    res.status(400).json({error: "Wrong password"});
+    res.status(400).json({error: 'Wrong password'});
     return;
   }
 
-  if (req.session.user) {
-    req.session.user.id = user.id;
-    req.session.user.name = user.username;
+  req.session.user = { id: dbUser.id, name: user.username };
+  res.json({redirect: '/'})
+});
+
+app.post('/signin/attempt', async (req: Request, res: Response) => {
+  let user: User = req.body as User;
+
+  if (sql.checkUser(user.username)) { 
+    res.status(400).json({ error: "User already exists" });
+    return; 
   }
 
-  res.redirect("/"); 
+  try {
+    const passwordHash = await bcrypt.hash(user.password, 10);
+    user.password = passwordHash;
+    const id = sql.insertUser(user);
+
+    req.session.user = { id: id, name: user.username };
+    res.json({ redirect: '/' });
+    return;
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+    return;
+  }
 });
 
 app.use(express.static(path.join(__dirname, '../public')));
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
-});
-
-app.post('signin/attempt', (req: Request, res: Response) => {
-  let user: User = req.body as User;
-
-  if (!sql.checkUser(user.username))
-  { 
-    res.status(400).json({error: "User already exists"});
-    return; 
-  }
-
-  const saltRounds = 10;
-  bcrypt.hash(user.password, saltRounds, function(err, hash) {
-    if (err)
-    {
-      res.status(500).json({error: ""});
-      console.log(err);
-      return;
-    }
-    user.password = hash;
-  });
-
-  const id = sql.insertUser(user);
-
-  if (req.session.user) {
-    req.session.user.id = id;
-    req.session.user.name = user.username;
-  }
-
-  res.redirect('/');
 });
