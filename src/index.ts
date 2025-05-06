@@ -14,7 +14,7 @@ declare module 'express-session' {
 import * as sql from "../database/sql";
 import * as mw from "./middleware";
 import { SessionUser } from "../types/express-types";
-import { User } from "../types/sql-types";
+import { User, GameResult } from "../types/sql-types";
 
 const ppath = "../public";
 
@@ -35,11 +35,40 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
 app.get('/', mw.checkLoggedIn, (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, `${ppath}/main`));
+  res.redirect('/main');
 });
 
 app.get('/login', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, `${ppath}/login`));
+  try {
+    res.sendFile(path.join(__dirname, `${ppath}/login`));
+  }
+  catch (err)
+  {
+    console.error('Error sending file', err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+app.get('/main', (req: Request, res: Response) => {
+  try {
+    res.sendFile(path.join(__dirname, `${ppath}/main`));
+  }
+  catch (err)
+  {
+    console.error('Error sending file', err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+app.get('/game/random', mw.checkLoggedIn, (req: Request, res: Response) => {
+  try {
+    res.sendFile(path.join(__dirname, `${ppath}/game/random`));
+  }
+  catch (err)
+  {
+    console.error('Error sending file', err);
+    res.status(500).send('Internal server error');
+  }
 });
 
 app.post('/login/attempt', async (req: Request, res: Response) => {
@@ -82,6 +111,26 @@ app.post('/signin/attempt', async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
     return;
+  }
+});
+
+app.get('/game/random/play', (req: Request, res: Response) => {
+  const n = Math.floor(Math.random() * 10000);
+
+  let gameResult: GameResult = {
+    gameId: 1, // Hard coded for now
+    userId: req.session.user?.id ?? 0, // Default to 0 if undefined
+    score: n,
+    result: 1
+  };
+  try {
+    sql.insertGameResult(gameResult);
+    res.json({score: n});
+  }
+  catch (err)
+  {
+    console.error(err);
+    res.status(500).json({error: "internal server error"});
   }
 });
 

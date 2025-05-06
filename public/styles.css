@@ -1,0 +1,13 @@
+* {
+    margin:none;
+}
+
+body {
+    background-color: blueviolet;
+    height: 100vh;
+}
+
+.modaldiv {
+    display: flex;
+    flex-direction: column;
+}

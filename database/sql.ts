@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
-import { User, Count } from '../types/sql-types'
+import { User, Count, GameResult } from '../types/sql-types'
 
 const db = new Database('database/database.db', { verbose: console.log });
 
@@ -42,4 +42,12 @@ export function getUserPassword(name: String): User
     const query = db.prepare("SELECT password, id FROM user WHERE name = ?");
     const user = query.get(name) as User;
     return user;
+}
+
+export function insertGameResult(gameResult: GameResult): Number | BigInt
+{
+    const query = db.prepare("INSERT into GameResult (result, score, nameId, gameId) VALUES (?,?,?,?)");
+    const result = query.run(gameResult.userId, gameResult.gameId, gameResult.result, gameResult.score);
+
+    return result.lastInsertRowid;
 }

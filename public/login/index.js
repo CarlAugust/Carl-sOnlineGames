@@ -54,3 +54,20 @@ const signin = async () => {
         console.error(e);
     }
 };
+
+const logInModal = document.getElementById('loginmodal');
+const signUpModal = document.getElementById('signupmodal');
+
+signUpModal.close();
+
+const openSignUpModal = () =>
+{
+    logInModal.close();
+    signUpModal.showModal();
+}
+
+const openLoginModal = () =>
+{
+    logInModal.showModal();
+    signUpModal.close();
+}
