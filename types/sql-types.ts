@@ -1,7 +1,13 @@
+export enum role {
+    user = 1,
+    admin = 2
+}
+
 export interface User {
     id: Number | BigInt;
     username: string;
     password: string;
+    role?: role;
 }
 
 export interface GameResult {

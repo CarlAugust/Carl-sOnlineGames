@@ -17,7 +17,25 @@ export function checkLoggedIn(req: Request, res: Response, next: NextFunction)
     }
     else
     {
-        console.log("Fail");
         return res.redirect("/login");
     }
+}
+
+// Example admin function
+/*
+export function checkAdmin(req: Request, res: Response, next: NextFunction)
+{
+    if (req.session.user.role = sqlType.role.admin)
+    {
+        next();
+    }
+    else
+    {
+        return res.status(400).json({error: 'Unauthorized user'})   
+    }
+}
+*/
+
+function commitbro() {
+    console.log("hi");
 }
