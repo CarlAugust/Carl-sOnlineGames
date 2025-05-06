@@ -118,7 +118,7 @@ app.get('/game/random/play', (req: Request, res: Response) => {
   const n = Math.floor(Math.random() * 10000);
 
   let gameResult: GameResult = {
-    gameId: 1, // Hard coded for now
+    nameId: 1, // Hard coded for now
     userId: req.session.user?.id ?? 0, // Default to 0 if undefined
     score: n,
     result: 1

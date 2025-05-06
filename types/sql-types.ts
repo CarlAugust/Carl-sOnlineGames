@@ -7,7 +7,7 @@ export interface User {
 export interface GameResult {
     id?: Number | BigInt;
     userId: Number | BigInt;
-    gameId: Number;
+    nameId: Number;
     score: Number;
     result: Number;
 }

@@ -46,8 +46,8 @@ export function getUserPassword(name: String): User
 
 export function insertGameResult(gameResult: GameResult): Number | BigInt
 {
-    const query = db.prepare("INSERT into GameResult (result, score, nameId, gameId) VALUES (?,?,?,?)");
-    const result = query.run(gameResult.userId, gameResult.gameId, gameResult.result, gameResult.score);
+    const query = db.prepare("INSERT into GameResult (userId, nameId, result, score) VALUES (?,?,?,?)");
+    const result = query.run(gameResult.userId, gameResult.nameId, gameResult.result, gameResult.score);
 
     return result.lastInsertRowid;
 }
