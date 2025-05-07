@@ -1,13 +1,18 @@
 export enum role {
-    user = 1,
-    admin = 2
+    admin = 1,
+    user = 2
 }
 
 export interface User {
     id: Number | BigInt;
     username: string;
     password: string;
-    role?: role;
+    role: role;
+}
+
+export interface RoleAndIdUser {
+    id: Number | BigInt;
+    role: role;
 }
 
 export interface GameResult {

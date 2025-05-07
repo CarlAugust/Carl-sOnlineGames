@@ -1,12 +1,18 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
-import { User, Count, GameResult } from '../types/sql-types'
+import { User, Count, GameResult, role, RoleAndIdUser } from '../types/sql-types'
 
 const db = new Database('database/database.db', { verbose: console.log });
 
 const exeSql = fs.readFileSync("database/initdb.sql", 'utf8');;
 
 db.exec(exeSql);
+
+// Error if roles already exist
+try {
+    db.prepare("INSERT INTO ROLE (name) VALUES ('Admin'), ('User')").run();
+}
+catch (err){}
 
 export function getUsers(): User[]
 {
@@ -29,12 +35,22 @@ export function checkUser(username: String): Boolean
     return true;
 }
 
-export function insertUser(user: User): Number | BigInt
+export function insertUser(user: User): RoleAndIdUser
 {
-    const query = db.prepare("INSERT INTO user (name, password) VALUES (?, ?)");
-    const result = query.run(user.username, user.password);
+    const insertQuery = db.prepare("INSERT INTO user (name, password) VALUES (?, ?)");
+    const result = insertQuery.run(user.username, user.password);
 
-    return result.lastInsertRowid;
+    const id = result.lastInsertRowid;
+
+    const selectQuery = db.prepare("SELECT roleId FROM user WHERE id = ?")
+    const roleIdObject = selectQuery.get() as any;
+    const roleId = roleIdObject.roleId as role;
+
+    const roleAndIdUser: RoleAndIdUser = {
+        id: id,
+        role: roleId
+    }
+    return roleAndIdUser;
 }
 
 export function getUserPassword(name: String): User

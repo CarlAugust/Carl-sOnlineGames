@@ -87,7 +87,7 @@ app.post('/login/attempt', async (req: Request, res: Response) => {
     return;
   }
 
-  req.session.user = { id: dbUser.id, name: user.username };
+  req.session.user = { id: dbUser.id, name: user.username, role: dbUser.role };
   res.json({redirect: '/'})
 });
 
@@ -102,9 +102,9 @@ app.post('/signin/attempt', async (req: Request, res: Response) => {
   try {
     const passwordHash = await bcrypt.hash(user.password, 10);
     user.password = passwordHash;
-    const id = sql.insertUser(user);
+    const result = sql.insertUser(user);
 
-    req.session.user = { id: id, name: user.username };
+    req.session.user = { id: result.id, name: user.username, role: result.role };
     res.json({ redirect: '/' });
     return;
   } catch (err) {
