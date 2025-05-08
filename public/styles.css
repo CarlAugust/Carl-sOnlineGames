@@ -1,9 +1,45 @@
 * {
     margin:none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+button {
+    background-color: white;
+    border: solid black 1px;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 body {
     height: 100vh;
+    background-color: brown;
+}
+
+main {
+    position: absolute;
+    left:20%;
+    top:20%;
+    background-color: white;
+    border-radius: 50px;
+    box-shadow: 20px;
+    padding:20px;
+    padding-bottom: 40px;
+}
+
+footer {
+    position: fixed;
+    top:100%;
+}
+
+table {
+    border-collapse: collapse;
+    border: 2px solid;
+}
+
+th,
+td {
+  border: 1px solid;
+  padding: 8px 10px;
 }
 
 .modaldiv {

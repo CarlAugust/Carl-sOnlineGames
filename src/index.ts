@@ -136,9 +136,16 @@ app.get('/game/random/play', (req: Request, res: Response) => {
   }
 });
 
-app.get('/api/leaderboardListing', (req: Request, res: Response) => {
-  const data = sql.getAllGameResults();
-  res.send(stats.createLeaderBoardListing(data));
+app.get('/api/leaderboardListing', mw.checkLoggedIn, (req: Request, res: Response) => {
+  try {
+    const data = sql.getAllGameResults();
+    res.json(stats.createLeaderBoardListing(data));
+  }
+  catch (err)
+  {
+    console.error(err);
+    res.status(500).json({error: 'Something went wrong'})
+  }
 });
 
 app.use(express.static(path.join(__dirname, '../public')));
