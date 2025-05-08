@@ -4,7 +4,7 @@ import { User, Count, GameResult, role, RoleAndIdUser } from '../types/sql-types
 
 const db = new Database('database/database.db', { verbose: console.log });
 
-const exeSql = fs.readFileSync("database/initdb.sql", 'utf8');;
+const exeSql = fs.readFileSync("database/initdb.sql", 'utf8');
 
 db.exec(exeSql);
 
@@ -37,8 +37,8 @@ export function checkUser(username: String): Boolean
 
 export function insertUser(user: User): RoleAndIdUser
 {
-    const insertQuery = db.prepare("INSERT INTO user (name, password) VALUES (?, ?)");
-    const result = insertQuery.run(user.username, user.password);
+    const insertQuery = db.prepare("INSERT INTO user (name, password, roleId) VALUES (?, ?, ?)");
+    const result = insertQuery.run(user.username, user.password, user.role);
 
     const id = result.lastInsertRowid;
 
@@ -66,4 +66,29 @@ export function insertGameResult(gameResult: GameResult): Number | BigInt
     const result = query.run(gameResult.userId, gameResult.nameId, gameResult.result, gameResult.score);
 
     return result.lastInsertRowid;
+}
+
+
+export interface UserAndGameResults
+{
+    user: String,
+    userRole: role,
+    name: String,
+    score: Number,
+    result: Number
+
+}
+
+export function getAllGameResults()
+{
+    const query = db.prepare(`SELECT 
+                                user.name as user,
+                                user.roleId as userRole,
+                                game.name as name,
+                                gameResult.score as score,
+                                gameResult.result as result
+                            FROM gameResult
+                            INNER JOIN user on gameresult.userId = user.id
+                            INNER JOIN game on gameresult.nameId = game.id
+                            `)
 }

@@ -14,7 +14,7 @@ declare module 'express-session' {
 import * as sql from "../database/sql";
 import * as mw from "./middleware";
 import { SessionUser } from "../types/express-types";
-import { User, GameResult } from "../types/sql-types";
+import { User, GameResult, role } from "../types/sql-types";
 
 const ppath = "../public";
 
@@ -93,6 +93,7 @@ app.post('/login/attempt', async (req: Request, res: Response) => {
 
 app.post('/signin/attempt', async (req: Request, res: Response) => {
   let user: User = req.body as User;
+  user.role = role.user;
 
   if (sql.checkUser(user.username)) { 
     res.status(400).json({ error: "User already exists" });
