@@ -13,6 +13,7 @@ declare module 'express-session' {
 
 import * as sql from "../database/sql";
 import * as mw from "./middleware";
+import * as stats from '../utils/statistics'
 import { SessionUser } from "../types/express-types";
 import { User, GameResult, role } from "../types/sql-types";
 
@@ -133,6 +134,11 @@ app.get('/game/random/play', (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({error: "internal server error"});
   }
+});
+
+app.get('/api/leaderboardListing', (req: Request, res: Response) => {
+  const data = sql.getAllGameResults();
+  res.send(stats.createLeaderBoardListing(data));
 });
 
 app.use(express.static(path.join(__dirname, '../public')));

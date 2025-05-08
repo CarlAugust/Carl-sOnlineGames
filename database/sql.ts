@@ -73,7 +73,6 @@ export interface UserAndGameResults
 {
     user: String,
     userRole: role,
-    name: String,
     score: Number,
     result: Number
 
@@ -85,7 +84,6 @@ export function getAllGameResults(): UserAndGameResults[]
     const query = db.prepare(`SELECT 
                                 user.name as user,
                                 user.roleId as userRole,
-                                game.name as name,
                                 gameResult.score as score,
                                 gameResult.result as result
                             FROM gameResult
