@@ -49,7 +49,7 @@ app.get('/login', (req: Request, res: Response) => {
   }
 });
 
-app.get('/main', (req: Request, res: Response) => {
+app.get('/main', mw.checkLoggedIn, (req: Request, res: Response) => {
   try {
     res.sendFile(path.join(__dirname, `${ppath}/main`));
   }

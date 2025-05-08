@@ -59,6 +59,7 @@ const logInModal = document.getElementById('loginmodal');
 const signUpModal = document.getElementById('signupmodal');
 
 signUpModal.close();
+logInModal.showModal();
 
 const openSignUpModal = () =>
 {

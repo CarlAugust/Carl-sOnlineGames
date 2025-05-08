@@ -1,3 +1,5 @@
+
+// SHOULD MATCH WITH DATABASE ID AND NAME!!!
 export enum role {
     admin = 1,
     user = 2

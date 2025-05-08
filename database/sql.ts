@@ -43,7 +43,7 @@ export function insertUser(user: User): RoleAndIdUser
     const id = result.lastInsertRowid;
 
     const selectQuery = db.prepare("SELECT roleId FROM user WHERE id = ?")
-    const roleIdObject = selectQuery.get() as any;
+    const roleIdObject = selectQuery.get(id) as any;
     const roleId = roleIdObject.roleId as role;
 
     const roleAndIdUser: RoleAndIdUser = {
@@ -68,7 +68,7 @@ export function insertGameResult(gameResult: GameResult): Number | BigInt
     return result.lastInsertRowid;
 }
 
-
+// For getAllGameResults
 export interface UserAndGameResults
 {
     user: String,
@@ -79,8 +79,9 @@ export interface UserAndGameResults
 
 }
 
-export function getAllGameResults()
+export function getAllGameResults(): UserAndGameResults[]
 {
+    // Using a query like this might cause a problem later because im getting all the gameResult data
     const query = db.prepare(`SELECT 
                                 user.name as user,
                                 user.roleId as userRole,
@@ -91,4 +92,7 @@ export function getAllGameResults()
                             INNER JOIN user on gameresult.userId = user.id
                             INNER JOIN game on gameresult.nameId = game.id
                             `)
+
+    const result = query.all() as UserAndGameResults[];
+    return result;
 }
