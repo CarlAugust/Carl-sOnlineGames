@@ -28,6 +28,6 @@ export function checkAdmin(req: Request, res: Response, next: NextFunction)
     }
     else
     {
-        return res.redirect('main');   
+        return res.redirect('/main');   
     }
 }

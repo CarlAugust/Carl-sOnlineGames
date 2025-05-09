@@ -30,8 +30,6 @@ app.use(session({
   saveUninitialized: false
 }));
 
-app.use(express.static(path.join(__dirname, '../public')));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -100,7 +98,6 @@ app.post('/login/attempt', async (req: Request, res: Response) => {
     res.status(400).json({error: 'Wrong password'});
     return;
   }
-
   req.session.user = { id: dbUser.id, name: user.username, role: dbUser.role };
   res.json({redirect: '/'})
 });
@@ -127,6 +124,18 @@ app.post('/signin/attempt', async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
     return;
   }
+});
+
+app.get('/logout', async (req: Request, res: Response) => {
+  req.session.destroy((err) =>{
+    if(err)
+    {
+      console.error(err);
+      res.status(500).json({error: 'Internal server error'});
+      return;
+    }
+    res.redirect('/login');
+  });
 });
 
 app.get('/game/random/play', (req: Request, res: Response) => {
@@ -178,6 +187,8 @@ app.get('/api/leaderboardListing', mw.checkLoggedIn, (req: Request, res: Respons
     res.status(500).json({error: 'Something went wrong'})
   }
 });
+
+app.use(express.static(path.join(__dirname, '../public')));
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import fs from 'fs';
 import { User, Count, GameResult, role, RoleAndIdUser } from '../types/sql-types'
 
-const db = new Database('database/database.db', { verbose: console.log });
+const db = new Database('database/database.db');
 
 const exeSql = fs.readFileSync("database/initdb.sql", 'utf8');
 
@@ -55,7 +55,7 @@ export function insertUser(user: User): RoleAndIdUser
 
 export function getUserPassword(name: String): User
 {
-    const query = db.prepare("SELECT password, id FROM user WHERE name = ?");
+    const query = db.prepare("SELECT password, id, roleId as role FROM user WHERE name = ?");
     const user = query.get(name) as User;
     return user;
 }
