@@ -89,7 +89,7 @@ export function getAllGameResults(): UserAndGameResults[]
                             FROM gameResult
                             INNER JOIN user on gameresult.userId = user.id
                             INNER JOIN game on gameresult.nameId = game.id
-                            `)
+                            `);
 
     const result = query.all() as UserAndGameResults[];
     return result;

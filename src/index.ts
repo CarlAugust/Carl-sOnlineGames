@@ -30,6 +30,8 @@ app.use(session({
   saveUninitialized: false
 }));
 
+app.use(express.static(path.join(__dirname, '../public')));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -64,6 +66,17 @@ app.get('/main', mw.checkLoggedIn, (req: Request, res: Response) => {
 app.get('/game/random', mw.checkLoggedIn, (req: Request, res: Response) => {
   try {
     res.sendFile(path.join(__dirname, `${ppath}/game/random`));
+  }
+  catch (err)
+  {
+    console.error('Error sending file', err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+app.get('/game/premium', mw.checkLoggedIn, mw.checkAdmin, (req: Request, res: Response) => {
+  try {
+    res.sendFile(path.join(__dirname, `${ppath}/game/premium`));
   }
   catch (err)
   {
@@ -136,6 +149,24 @@ app.get('/game/random/play', (req: Request, res: Response) => {
   }
 });
 
+app.get('/game/premium/play', (req: Request, res: Response) => {
+  let gameResult: GameResult = {
+    nameId: 1, // Hard coded for now
+    userId: req.session.user?.id ?? 0, // Default to 0 if undefined
+    score: 10000,
+    result: 1
+  };
+  try {
+    sql.insertGameResult(gameResult);
+    res.json({score: 10000});
+  }
+  catch (err)
+  {
+    console.error(err);
+    res.status(500).json({error: "internal server error"});
+  }
+});
+
 app.get('/api/leaderboardListing', mw.checkLoggedIn, (req: Request, res: Response) => {
   try {
     const data = sql.getAllGameResults();
@@ -148,7 +179,6 @@ app.get('/api/leaderboardListing', mw.checkLoggedIn, (req: Request, res: Respons
   }
 });
 
-app.use(express.static(path.join(__dirname, '../public')));
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
