@@ -13,7 +13,7 @@ declare module 'express-session' {
 
 import * as sql from "../database/sql";
 import * as mw from "./middleware";
-import * as stats from '../utils/statistics'
+import * as stats from './statistics'
 import { SessionUser } from "../types/express-types";
 import { User, GameResult, role } from "../types/sql-types";
 
@@ -106,7 +106,7 @@ app.post('/signin/attempt', async (req: Request, res: Response) => {
   let user: User = req.body as User;
   user.role = role.user;
 
-  if (sql.checkUser(user.username)) { 
+  if (sql.checkUser(user.username, user.email)) { 
     res.status(400).json({ error: "User already exists" });
     return; 
   }
@@ -117,7 +117,7 @@ app.post('/signin/attempt', async (req: Request, res: Response) => {
     const result = sql.insertUser(user);
 
     req.session.user = { id: result.id, name: user.username, role: result.role };
-    res.json({ redirect: '/' });
+    res.json({ redirect: '/' });  
     return;
   } catch (err) {
     console.error(err);
@@ -191,5 +191,6 @@ app.get('/api/leaderboardListing', mw.checkLoggedIn, (req: Request, res: Respons
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.listen(port, () => {
+  stats.insertIntoVisitLog(new Date(), '/game/random');
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });

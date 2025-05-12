@@ -9,7 +9,7 @@
 <body>
     <dialog class="modal" id="loginmodal" aria-label="Login">
         <div class="modaldiv">
-            <label for="username">Username:</label>
+            <label for="username-email">Username or email:</label>
             <input type="text" id="usernameLgn" name="username" required>
             <label for="password">Password:</label>
             <input type="password" id="passwordLgn" name="password" required>
@@ -20,8 +20,13 @@
 
     <dialog class="modal" id="signupmodal" aria-label="Sign up">
         <div class="modaldiv">
+            <div>
+                <a href="/gdpr">Read about our privacy policy</a>
+            </div>
             <label for="username">Username:</label>
             <input type="text" id="usernameSgn" name="username" required>
+            <label for="email">Email (optional):</label>
+            <input type="email" id="emailSgn" name="email">
             <label for="password">Password:</label>
             <input type="password" id="passwordSgn1" name="password" required>
             <label for="password">Type password again:</label>

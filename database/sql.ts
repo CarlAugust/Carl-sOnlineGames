@@ -10,7 +10,8 @@ db.exec(exeSql);
 
 // Error if roles already exist
 try {
-    db.prepare("INSERT INTO ROLE (name) VALUES ('Admin'), ('User')").run();
+    db.prepare("INSERT INTO role (name) VALUES ('Admin'), ('User')").run();
+    db.prepare("INSERT INTO game (name) VALUES ('Random')").run();
 }
 catch (err){}
 
@@ -22,10 +23,10 @@ export function getUsers(): User[]
     return users;
 };
 
-export function checkUser(username: String): Boolean
+export function checkUser(username: String, email: String | undefined): Boolean
 {
-    const query = db.prepare("SELECT COUNT(*) as count FROM user WHERE name = ?");
-    const result = query.get(username) as Count;
+    const query = db.prepare("SELECT COUNT(*) as count FROM user WHERE name = ? OR email = ?");
+    const result = query.get(username, email) as Count;
     
     if (result.count == 0)
     {
@@ -37,8 +38,8 @@ export function checkUser(username: String): Boolean
 
 export function insertUser(user: User): RoleAndIdUser
 {
-    const insertQuery = db.prepare("INSERT INTO user (name, password, roleId) VALUES (?, ?, ?)");
-    const result = insertQuery.run(user.username, user.password, user.role);
+    const insertQuery = db.prepare("INSERT INTO user (name, email, password, roleId) VALUES (?, ?, ?, ?)");
+    const result = insertQuery.run(user.username, user.email, user.password, user.role);
 
     const id = result.lastInsertRowid;
 
@@ -55,8 +56,9 @@ export function insertUser(user: User): RoleAndIdUser
 
 export function getUserPassword(name: String): User
 {
-    const query = db.prepare("SELECT password, id, roleId as role FROM user WHERE name = ?");
-    const user = query.get(name) as User;
+    const query = db.prepare("SELECT password, id, roleId as role FROM user WHERE name = ? OR email = ?");
+    let user = query.get(name, name) as User;
+    
     return user;
 }
 

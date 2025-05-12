@@ -14,6 +14,7 @@ const checkResponse = async (response) => {
 
 const login = async () => {
     console.log("Sent form");
+    // Username can be both username and email
     const username = document.getElementById("usernameLgn").value;
     const password = document.getElementById("passwordLgn").value;
 
@@ -32,6 +33,7 @@ const login = async () => {
 const signin = async () => {
 
     const username = document.getElementById("usernameSgn").value;
+    const email = document.getElementById("emailSgn").value;
     const password1 = document.getElementById("passwordSgn1").value;
     const password2 = document.getElementById("passwordSgn2").value;
 
@@ -46,7 +48,7 @@ const signin = async () => {
         const response = await fetch("/signin/attempt", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password: password1 }),
+            body: JSON.stringify({ username, password: password1, email }),
         });
         checkResponse(response);
         

@@ -8,6 +8,7 @@ export enum role {
 export interface User {
     id: Number | BigInt;
     username: string;
+    email?: string;
     password: string;
     role: role;
 }
