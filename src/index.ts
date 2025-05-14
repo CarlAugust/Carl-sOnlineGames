@@ -114,6 +114,14 @@ app.post('/signin/attempt', async (req: Request, res: Response) => {
   try {
     const passwordHash = await bcrypt.hash(user.password, 10);
     user.password = passwordHash;
+
+    const ip = '82.134.25.142'; // Hard coded
+    const ipApiResponse = await fetch(`http://ip-api.com/json/${ip}`, {
+      method: "GET"
+    });
+    const ipData = await ipApiResponse.json() as any;
+    user.countryCode = ipData.countryCode;
+    
     const result = sql.insertUser(user);
 
     req.session.user = { id: result.id, name: user.username, role: result.role };
@@ -191,6 +199,5 @@ app.get('/api/leaderboardListing', mw.checkLoggedIn, (req: Request, res: Respons
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.listen(port, () => {
-  stats.insertIntoVisitLog(new Date(), '/game/random');
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });

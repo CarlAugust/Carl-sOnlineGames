@@ -11,6 +11,8 @@ export interface User {
     email?: string;
     password: string;
     role: role;
+    countryCode: String;
+    continent: String;
 }
 
 export interface RoleAndIdUser {

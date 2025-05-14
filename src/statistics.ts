@@ -25,13 +25,15 @@ export function createLeaderBoardListing(userAndGameResults: sql.UserAndGameResu
 
 export function insertIntoVisitLog(date: Date, page: String)
 {
-  console.log('Broo!');
-  try {
-    fs.writeFileSync('src/visitlog.csv', `${date.toDateString()};${page}\n`);
-  }
-  catch (err) {
-    console.error(err);
-  }
+  fs.appendFile('src/visitlog.csv', `${date};${page}\n`, (err) => {
+    if (err) {
+      console.error(err);
+    }
+    else
+    {
+      console.log('succ');
+    }
+  })
 }
 
 export function getVisitLogData(dateStart: Date, dateEnd: Date)

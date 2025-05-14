@@ -12,8 +12,7 @@ db.exec(exeSql);
 try {
     db.prepare("INSERT INTO role (name) VALUES ('Admin'), ('User')").run();
     db.prepare("INSERT INTO game (name) VALUES ('Random')").run();
-}
-catch (err){}
+} catch (err) {}
 
 export function getUsers(): User[]
 {
@@ -38,8 +37,8 @@ export function checkUser(username: String, email: String | undefined): Boolean
 
 export function insertUser(user: User): RoleAndIdUser
 {
-    const insertQuery = db.prepare("INSERT INTO user (name, email, password, roleId) VALUES (?, ?, ?, ?)");
-    const result = insertQuery.run(user.username, user.email, user.password, user.role);
+    const insertQuery = db.prepare("INSERT INTO user (name, email, password, roleId, countryCode) VALUES (?, ?, ?, ?, ?)");
+    const result = insertQuery.run(user.username, user.email, user.password, user.role, user.countryCode);
 
     const id = result.lastInsertRowid;
 
