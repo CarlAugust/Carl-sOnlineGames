@@ -13,6 +13,7 @@ export interface User {
     role: role;
     countryCode: String;
     continent: String;
+    personalised: Number;
 }
 
 export interface RoleAndIdUser {

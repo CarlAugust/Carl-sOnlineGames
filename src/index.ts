@@ -103,16 +103,8 @@ app.post('/login/attempt', async (req: Request, res: Response) => {
   res.json({redirect: '/'})
 });
 
-interface SignInRequestBody {
-  user: User,
-  cookies: {
-      necessary: boolean;
-      personalised: boolean;
-  };
-}
-
 app.post('/signin/attempt', async (req: Request, res: Response) => {
-  let { user, cookies } = req.body as SignInRequestBody;
+  let user = req.body as User;
   user.role = role.user;
 
   if (sql.checkUser(user.username, user.email)) { 

@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS user (
     roleId INTEGER,
     email VARCHAR(80),
     countryCode VARCHAR(10),
+    personalised INTEGER NOT NULL,
     FOREIGN KEY (roleId) REFERENCES role (id)
 );
 

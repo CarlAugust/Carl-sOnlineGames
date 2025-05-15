@@ -37,8 +37,9 @@ export function checkUser(username: String, email: String | undefined): Boolean
 
 export function insertUser(user: User): RoleAndIdUser
 {
-    const insertQuery = db.prepare("INSERT INTO user (name, email, password, roleId, countryCode) VALUES (?, ?, ?, ?, ?)");
-    const result = insertQuery.run(user.username, user.email, user.password, user.role, user.countryCode);
+    console.log(user);
+    const insertQuery = db.prepare("INSERT INTO user (name, email, password, roleId, countryCode, personalised) VALUES (?, ?, ?, ?, ?, ?)");
+    const result = insertQuery.run(user.username, user.email, user.password, user.role, user.countryCode, user.personalised);
 
     const id = result.lastInsertRowid;
 

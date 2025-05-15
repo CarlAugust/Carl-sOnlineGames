@@ -1,3 +1,5 @@
+const errorField = document.getElementById("errorSgn");
+
 const checkResponse = async (response) => {
     if (response.ok) {
         const data = await response.json();
@@ -41,8 +43,13 @@ const signin = async () => {
 
     if (password1 != password2)
     {
-        const errorField = document.getElementById("errorSgn");
         errorField.innerHTML = "Password is not the same";
+        return;
+    }
+
+    if (nessecary != true)
+    {
+        errorField.innerHTML = "You need to accept necessary cookies";
         return;
     }
 
@@ -50,7 +57,7 @@ const signin = async () => {
         const response = await fetch("/signin/attempt", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user: {username, password: password1, email}, cookies: {necessary: nessecary, personalised: personalised}}),
+            body: JSON.stringify({ username, password: password1, email, personalised: personalised ? 1 : 0}),
         });
         checkResponse(response);
         
