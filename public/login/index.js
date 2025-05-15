@@ -36,6 +36,8 @@ const signin = async () => {
     const email = document.getElementById("emailSgn").value;
     const password1 = document.getElementById("passwordSgn1").value;
     const password2 = document.getElementById("passwordSgn2").value;
+    const nessecary = document.getElementById("necessary").checked;
+    const personalised = document.getElementById("personalised").checked;
 
     if (password1 != password2)
     {
@@ -48,7 +50,7 @@ const signin = async () => {
         const response = await fetch("/signin/attempt", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password: password1, email }),
+            body: JSON.stringify({ user: {username, password: password1, email}, cookies: {necessary: nessecary, personalised: personalised}}),
         });
         checkResponse(response);
         

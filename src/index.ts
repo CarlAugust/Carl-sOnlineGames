@@ -16,6 +16,7 @@ import * as mw from "./middleware";
 import * as stats from './statistics'
 import { SessionUser } from "../types/express-types";
 import { User, GameResult, role } from "../types/sql-types";
+import { Sign } from "crypto";
 
 const ppath = "../public";
 
@@ -102,8 +103,16 @@ app.post('/login/attempt', async (req: Request, res: Response) => {
   res.json({redirect: '/'})
 });
 
+interface SignInRequestBody {
+  user: User,
+  cookies: {
+      necessary: boolean;
+      personalised: boolean;
+  };
+}
+
 app.post('/signin/attempt', async (req: Request, res: Response) => {
-  let user: User = req.body as User;
+  let { user, cookies } = req.body as SignInRequestBody;
   user.role = role.user;
 
   if (sql.checkUser(user.username, user.email)) { 
@@ -121,7 +130,7 @@ app.post('/signin/attempt', async (req: Request, res: Response) => {
     });
     const ipData = await ipApiResponse.json() as any;
     user.countryCode = ipData.countryCode;
-    
+
     const result = sql.insertUser(user);
 
     req.session.user = { id: result.id, name: user.username, role: result.role };

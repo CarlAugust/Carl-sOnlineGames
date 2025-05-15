@@ -20,9 +20,6 @@
 
     <dialog class="modal" id="signupmodal" aria-label="Sign up">
         <div class="modaldiv">
-            <div>
-                <a href="/gdpr">Read about our privacy policy</a>
-            </div>
             <label for="username">Username:</label>
             <input type="text" id="usernameSgn" name="username" required>
             <label for="email">Email (optional):</label>
@@ -31,6 +28,16 @@
             <input type="password" id="passwordSgn1" name="password" required>
             <label for="password">Type password again:</label>
             <input type="password" id="passwordSgn2" name="password" required>
+            <br>
+            <p><a target="_blank" href="/privacypolicy">Read our privacy policy</a></p>
+            <div>
+                <label for="necessary">I agree to necessary cookies</label>
+                <input type="checkbox" id="necessary" name="necessary"></input>
+            </div>
+            <div>
+                <label for="personalised">I want a personalised experience</label>
+                <input type="checkbox" id="personalised" name="personalised"></input>
+            </div>
             <button id="loginBtn" onclick="signin()">Sign up</button>
             <button onclick="openLoginModal()">Want to log in instead?</button>
             <p id="errorSgn"></p>
