@@ -46,3 +46,7 @@ td {
     display: flex;
     flex-direction: column;
 }
+
+.error-p {
+    color:red;
+}

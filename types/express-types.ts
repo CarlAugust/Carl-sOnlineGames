@@ -3,6 +3,7 @@ import { role } from './sql-types';
 export interface SessionUser
 {
     id: Number | BigInt;
-    name: string;
+    name: String;
     role: role;
+    countryCode?: String;
 }

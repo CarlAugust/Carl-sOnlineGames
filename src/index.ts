@@ -116,12 +116,15 @@ app.post('/signin/attempt', async (req: Request, res: Response) => {
     const passwordHash = await bcrypt.hash(user.password, 10);
     user.password = passwordHash;
 
-    const ip = '82.134.25.142'; // Hard coded
-    const ipApiResponse = await fetch(`http://ip-api.com/json/${ip}`, {
-      method: "GET"
-    });
-    const ipData = await ipApiResponse.json() as any;
-    user.countryCode = ipData.countryCode;
+    if (user.personalised == 1)
+    {
+      const ip = '82.134.25.142'; // Hard coded
+      const ipApiResponse = await fetch(`http://ip-api.com/json/${ip}`, {
+        method: "GET"
+      });
+      const ipData = await ipApiResponse.json() as any;
+      user.countryCode = ipData.countryCode;
+    }
 
     const result = sql.insertUser(user);
 

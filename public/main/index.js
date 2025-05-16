@@ -2,7 +2,6 @@ const leaderBoard = document.getElementById('leaderboard');
 const leaderBoardBody = document.getElementById('leaderboardBody');
 
 const fetchLeaderBoardListing = async () => {
-    console.log('bruh');
     try {
         const response = await fetch('/api/leaderBoardListing', {
             method: "GET"

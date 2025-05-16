@@ -1,5 +1,3 @@
-const errorField = document.getElementById("errorSgn");
-
 const checkResponse = async (response) => {
     if (response.ok) {
         const data = await response.json();
@@ -15,10 +13,17 @@ const checkResponse = async (response) => {
 }
 
 const login = async () => {
-    console.log("Sent form");
+    const errorField = document.getElementById("errorLgn");
+
     // Username can be both username and email
     const username = document.getElementById("usernameLgn").value;
     const password = document.getElementById("passwordLgn").value;
+
+    if (!username && !password)
+    {
+        errorField.innerText = "Missing required fields";
+        return;
+    }
 
     try {
         const response = await fetch("/login/attempt", {
@@ -33,6 +38,7 @@ const login = async () => {
 };
 
 const signin = async () => {
+    const errorField = document.getElementById("errorSgn");
 
     const username = document.getElementById("usernameSgn").value;
     const email = document.getElementById("emailSgn").value;
@@ -41,15 +47,21 @@ const signin = async () => {
     const nessecary = document.getElementById("necessary").checked;
     const personalised = document.getElementById("personalised").checked;
 
+    if (!username && !password1 && !password2)
+    {
+        errorField.innerText = "Missing required fields";
+        return;
+    }
+
     if (password1 != password2)
     {
-        errorField.innerHTML = "Password is not the same";
+        errorField.innerText = "Password is not the same";
         return;
     }
 
     if (nessecary != true)
     {
-        errorField.innerHTML = "You need to accept necessary cookies";
+        errorField.innerText = "You need to accept necessary cookies";
         return;
     }
 
