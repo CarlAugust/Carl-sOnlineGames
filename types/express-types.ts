@@ -6,4 +6,5 @@ export interface SessionUser
     name: String;
     role: role;
     countryCode?: String;
+    personalised: Number;
 }

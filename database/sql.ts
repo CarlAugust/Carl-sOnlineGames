@@ -56,7 +56,7 @@ export function insertUser(user: User): RoleAndIdUser
 
 export function getUserPassword(name: String): User
 {
-    const query = db.prepare("SELECT password, id, roleId as role FROM user WHERE name = ? OR email = ?");
+    const query = db.prepare("SELECT password, id, roleId as role, personalised, countryCode FROM user WHERE name = ? OR email = ?");
     let user = query.get(name, name) as User;
     
     return user;
@@ -95,4 +95,15 @@ export function getAllGameResults(): UserAndGameResults[]
 
     const result = query.all() as UserAndGameResults[];
     return result;
+}
+
+export function deleteUser(id: Number | BigInt | undefined)
+{
+    db.prepare('DELETE FROM gameResult WHERE userId = ?').run(id);
+    db.prepare('DELETE FROM user WHERE id = ?').run(id);
+}
+
+export function updateCookie(personalised: number, id: Number | BigInt | undefined)
+{
+    db.prepare('UPDATE user SET personalised = ? WHERE id = ?').run(personalised, id);
 }

@@ -17,6 +17,7 @@ import * as stats from './statistics'
 import { SessionUser } from "../types/express-types";
 import { User, GameResult, role } from "../types/sql-types";
 import { Sign } from "crypto";
+import { PathParams } from "express-serve-static-core";
 
 const ppath = "../public";
 
@@ -40,48 +41,51 @@ app.get('/', mw.checkLoggedIn, (req: Request, res: Response) => {
   res.redirect('/main');
 });
 
-app.get('/login', (req: Request, res: Response) => {
-  try {
-    res.sendFile(path.join(__dirname, `${ppath}/login`));
-  }
-  catch (err)
-  {
-    console.error('Error sending file', err);
-    res.status(500).send('Internal server error');
-  }
-});
+interface Routes {
+  paths: PathParams[],
+  middleWare: any[]
+}
 
-app.get('/main', mw.checkLoggedIn, (req: Request, res: Response) => {
-  try {
-    res.sendFile(path.join(__dirname, `${ppath}/main`));
-  }
-  catch (err)
+const routes: Routes[] = [
   {
-    console.error('Error sending file', err);
-    res.status(500).send('Internal server error');
+    paths: ['/login', '/login/*'],
+    middleWare: []
+  },
+  {
+    paths: ['/main', '/main/*'],
+    middleWare: [mw.checkLoggedIn]
+  },
+  {
+    paths: ['/game/random', '/game/random/*'],
+    middleWare: [mw.checkLoggedIn]
+  },
+  {
+    paths: ['/game/premium', '/game/premium/*'],
+    middleWare: [mw.checkLoggedIn, mw.checkAdmin]
+  },
+  {
+    paths: ['/user', '/user/*'],
+    middleWare: [mw.checkLoggedIn]
+  },
+  {
+    paths: ['/privacypolicy', '/privacypolicy/*'],
+    middleWare: []
   }
-});
+];
 
-app.get('/game/random', mw.checkLoggedIn, (req: Request, res: Response) => {
-  try {
-    res.sendFile(path.join(__dirname, `${ppath}/game/random`));
-  }
-  catch (err)
-  {
-    console.error('Error sending file', err);
-    res.status(500).send('Internal server error');
-  }
-});
-
-app.get('/game/premium', mw.checkLoggedIn, mw.checkAdmin, (req: Request, res: Response) => {
-  try {
-    res.sendFile(path.join(__dirname, `${ppath}/game/premium`));
-  }
-  catch (err)
-  {
-    console.error('Error sending file', err);
-    res.status(500).send('Internal server error');
-  }
+routes.forEach(route => {
+  route.paths.forEach(pathStr => {
+    app.get(pathStr, ...route.middleWare, (req: Request, res: Response) => {
+      try {
+        res.sendFile(path.join(__dirname, `${ppath}/${route.paths[0]}`));
+      }
+      catch (err)
+      {
+        console.error('Error sending file', err);
+        res.status(500).send('Internal server error');
+      }
+    })
+  })
 });
 
 app.post('/login/attempt', async (req: Request, res: Response) => {
@@ -99,7 +103,7 @@ app.post('/login/attempt', async (req: Request, res: Response) => {
     res.status(400).json({error: 'Wrong password'});
     return;
   }
-  req.session.user = { id: dbUser.id, name: user.username, role: dbUser.role };
+  req.session.user = { id: dbUser.id, name: user.username, role: dbUser.role, personalised: dbUser.personalised, countryCode: dbUser.countryCode };
   res.json({redirect: '/'})
 });
 
@@ -128,7 +132,7 @@ app.post('/signin/attempt', async (req: Request, res: Response) => {
 
     const result = sql.insertUser(user);
 
-    req.session.user = { id: result.id, name: user.username, role: result.role };
+    req.session.user = { id: result.id, name: user.username, role: result.role, personalised: user.personalised, countryCode: user.countryCode };
     res.json({ redirect: '/' });  
     return;
   } catch (err) {
@@ -191,7 +195,8 @@ app.get('/game/premium/play', (req: Request, res: Response) => {
 app.get('/api/leaderboardListing', mw.checkLoggedIn, (req: Request, res: Response) => {
   try {
     const data = sql.getAllGameResults();
-    res.json(stats.createLeaderBoardListing(data));
+    const formatData = stats.createLeaderBoardListing(data);
+    res.json(formatData);
   }
   catch (err)
   {
@@ -199,6 +204,41 @@ app.get('/api/leaderboardListing', mw.checkLoggedIn, (req: Request, res: Respons
     res.status(500).json({error: 'Something went wrong'})
   }
 });
+
+app.get('/api/fetchUser', mw.checkLoggedIn, (req: Request, res: Response) => {
+  try {
+    res.json(req.session.user);
+  }
+  catch (err)
+  {
+    console.error(err);
+    res.status(500).json({error: 'Internal server error'});
+  }
+});
+
+app.delete('/deleteUser', mw.checkLoggedIn, (req: Request, res: Response) => {
+  try {
+    sql.deleteUser(req.session.user?.id);
+    res.json({redirect: '/login'})
+  } catch (err)
+  {
+    res.status(500).json({error: 'internal server error'});
+  }
+})
+
+app.post('/updateCookie', mw.checkLoggedIn, (req: Request, res: Response) => {
+  try {
+    sql.updateCookie(req.body.personalised, req.session.user?.id);
+
+    if (req.session.user) {
+        req.session.user.personalised = req.body.personalised;
+    }
+    res.json({message: "Nice"});
+  } catch (err)
+  {
+    res.json({error: "not nice"});
+  }
+})
 
 app.use(express.static(path.join(__dirname, '../public')));
 
